@@ -4,11 +4,16 @@
 ### 1) `json_modify.py`
 Typical call for a single file modification is:
 
-`python json_modify.py --file some.json --change g r --drop z VR N964 --exp 120 --shift 0.02 0.02 --pre modified`
+`python json_modify.py --file some.json --change g r --drop z VR N964 --exp 120 --shift 0.02 0.02 --pre myPrefix`
 
 For a set of files is:
 
-`python json_modify.py --file list_json.txt --change g r --drop z VR N964 --exp 120 --shift 0.02 0.02 --pre modified`
+`python json_modify.py --tab list_json.txt --change g r --drop z VR N964 --exp 120 --shift 0.02 0.02 --pre myPrefix`
+
+Or simply using the default values:
+
+`python json_modify.py --file some.json --exp 120`
+`python json_modify.py --tab list_json.txt --exp 120`
 
 About the parameters (this information is also available typing `python json_modify.py --help`):
   * `--file` or `--tab`: to input either a single filename or a file containing the paths to all the JSON files
