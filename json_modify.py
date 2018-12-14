@@ -256,6 +256,7 @@ def aux_main():
             b_drop=arg.drop, 
         )
         if (len(tmp_out) == 0):
+            # Continue statement will assure no write-out is tried
             logger.warning('No entries were selected from {0}'.format(p))
             continue
         # Writting out the modified JSON
