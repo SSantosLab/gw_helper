@@ -12,6 +12,7 @@ import socket
 import logging
 import datetime
 import argparse
+import numpy as np
 import json
 
 #
@@ -73,8 +74,13 @@ def open_json(fnm):
         logger.info('Skipping {0}'.format(fnm))
         data = None
     else:
-        with open(fnm) as f:
-            data = json.load(f)
+        try:
+            with open(fnm) as f:
+                data = json.load(f)
+        except:
+            logger.error('Something wrong in the JSON format, even a comma')
+            logger.info('Skipping {0}'.format(fnm))
+            data = None
     return data
 
 
@@ -220,7 +226,9 @@ def aux_main():
     if (arg.tab is None):
         path_list = [arg.file]
     else:
-        path_list = arg.tab
+        # Read list
+        arr = np.loadtxt(arg.tab, dtype=str)
+        path_list = list(arr)
     # If exptime is None then it will not be changed
     if (arg.exp is None):
         logger.warning('EXPTIME will not be changed as no value was input')
