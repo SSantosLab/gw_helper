@@ -129,14 +129,19 @@ def modify_json(j_in,
     logger.info('Dictionary of name-keyword equivalences: {0}'.format(equiv))
     # Each element of the JSON object is a dictionary 
     j_out = []
-    for ent in j_in:
+    for entry_n in j_in:
         # Create a copy of the n-th dictionary to work on it
-        tmp_d = ent.copy()
+        tmp_d = entry_n.copy()
         # First of all is to change to lowercase the keywords of interest. 
-        # This will avoid us simple errors
+        # This will avoid us simple errors. We create a second copy to avoid
+        # erros when modifyng the dictionary on the iteration
+        aux_dict = entry_n.copy()
         for k, v in tmp_d.iteritems():
             if k.lower() in map(str.lower, equiv.values()):
-                tmp_d[k.lower()] = tmp_d.pop(k)
+                aux_dict[k.lower()] = aux_dict.pop(k)
+                # tmp_d[k.lower()] = tmp_d.pop(k)
+        del tmp_d
+        tmp_d = aux_dict
         # 1) Change g-band to r-band
         # If later we want to change this, something more elegant need to 
         # be put in place
