@@ -30,7 +30,9 @@ Or simply using the default values:
 
 `python json_modify.py --tab list_json.txt --exp 120`
 
-**About the parameters** (this information is also available typing `python json_modify.py --help`):
+------------------------------------------------
+#### Arguments for calling the code
+(this information is also available typing `python json_modify.py --help`):
   * `--file` or `--tab`: to input either a single filename or a file containing the paths to all the JSON files. Remember you can create a list of files simply doing `ls *json > my_list.txt` on the commad line.
   * `--change`: to input 2 variables, the first is the band to be replaced, the second is the band used as replacement. Example: if we use `--change u Y` then the code will locate all u-band and replace them by Y-band. *Default is to change from g-band to r-band*
   * `--drop`: single variable or list of variables. Each of these will be used to drop the entries in the JSON file. Example: using `--drop H J K` will cause the code to remove all entries having either H-band, J-band, or K-band. *Default is to drop only z-band*
