@@ -2,6 +2,21 @@
 ## Some auxiliary codes for DES-GW
 
 ### 1) `json_modify.py`
+Note the Python-JSON standard fails (the core library) when the float numbers has only the “dot” but not “decimals”.
+Example:
+* “RA”: 32.    Will make Python-json fail
+* “RA”: 32.0    Will work perfect!
+ 
+Important:
+1) The code runs well in Python2.7, and doesn’t need any additional library, just numpy. So, if you put in on a directory, it works without needing additional files.
+1) The code will not drop entries with bands not listed in the “--drop” argument.
+1) The code will not change the bands not matching the criteria in “--change” argument.
+1) The code will generate 2 additional entries for each RA-DEC position, one shifted only in RA, the other only in DEC.
+1) The code changes g-band to r-band by default, drops z-band, and set a dithering of 0.02 deg to cover the CCD gaps. All these values can be changed when calling the script.
+1) To change the exposure time (one value for all the entries) use the calling argument.
+1) The code works either on a single file or in a list of files.
+1) he code writes out “RA” in lowercase. Let me know if you want it uppercase.
+
 Typical call for a single file modification is:
 
 `python json_modify.py --file some.json --change g r --drop z VR N964 --exp 120 --shift 0.02 0.02 --pre myPrefix`
