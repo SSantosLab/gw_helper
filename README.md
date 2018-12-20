@@ -1,21 +1,20 @@
 # Repo: gw_helper
 ## Some auxiliary codes for DES-GW
 
-### 1) `json_modify.py`
-Note the Python-JSON standard fails (the core library) when the float numbers has only the “dot” but not “decimals”.
-Example:
-* “RA”: 32.    Will make Python-json fail
-* “RA”: 32.0    Will work perfect!
- 
-Important:
+### 1) `json_modify.py`: code to modify JSON files and apply dithering
+
+#### What the code does?
 1) The code runs well in Python2.7, and doesn’t need any additional library, just numpy. So, if you put in on a directory, it works without needing additional files.
-1) The code will not drop entries with bands not listed in the “--drop” argument.
-1) The code will not change the bands not matching the criteria in “--change” argument.
-1) The code will generate 2 additional entries for each RA-DEC position, one shifted only in RA, the other only in DEC.
-1) The code changes g-band to r-band by default, drops z-band, and set a dithering of 0.02 deg to cover the CCD gaps. All these values can be changed when calling the script.
+1) The code will only drop entries with bands listed in the “--drop” argument.
+1) The code will only change the bands matching the criteria in “--change” argument.
+1) The code will generate 2 additional entries for each RA-DEC position, one shifted only in RA, the other only in DEC (dithering).
+1) The code changes g-band to r-band by default, drops z-band, and set a dithering of **0.02 deg** to cover the CCD gaps. All these values can be changed when calling the script.
 1) To change the exposure time (one value for all the entries) use the calling argument.
 1) The code works either on a single file or in a list of files.
-1) he code writes out “RA” in lowercase. Let me know if you want it uppercase.
+1) The code writes out “RA” in lowercase. Let me know if you want it uppercase.
+
+------------------------------------------------
+#### How to call the code?
 
 Typical call for a single file modification is:
 
@@ -31,7 +30,7 @@ Or simply using the default values:
 
 `python json_modify.py --tab list_json.txt --exp 120`
 
-About the parameters (this information is also available typing `python json_modify.py --help`):
+**About the parameters** (this information is also available typing `python json_modify.py --help`):
   * `--file` or `--tab`: to input either a single filename or a file containing the paths to all the JSON files. Remember you can create a list of files simply doing `ls *json > my_list.txt` on the commad line.
   * `--change`: to input 2 variables, the first is the band to be replaced, the second is the band used as replacement. Example: if we use `--change u Y` then the code will locate all u-band and replace them by Y-band. *Default is to change from g-band to r-band*
   * `--drop`: single variable or list of variables. Each of these will be used to drop the entries in the JSON file. Example: using `--drop H J K` will cause the code to remove all entries having either H-band, J-band, or K-band. *Default is to drop only z-band*
@@ -39,4 +38,10 @@ About the parameters (this information is also available typing `python json_mod
   * `--shift`: two values to be used as the shift in RA and DEC for the dithering. These values will be added to the RA and DEC values for each entry, resulting in 3 entries: (1) original entry, (2) entry shifted in RA only, (3) entry shifted in DEC only. Example: if we set `--shift 0.015 0.03` the code will create a shifted entry for `RA + 0.015` and other entry shifted in `DEC + 0.03`. *Default is to use 0.02 deg for RA and for DEC*
   * `--pre`: variable to be prepend to the resulting filename(s). Example: if `--pre neutr` then the output file for `obs01.json` will be `neutr_obs01.json`
 
---------------------------------------------------------------------
+------------------------------------------------
+#### Note about format
+Note the Python-JSON standard fails (the core library) when the float numbers has only the “dot” but not “decimals”.
+Example:
+* “RA”: 32.    Will make Python-json fail
+* “RA”: 32.0    Will work perfect!
+------------------------------------------------
