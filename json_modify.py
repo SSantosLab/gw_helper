@@ -50,7 +50,7 @@ fh.setFormatter(formatter)
 # add the handlers to logger
 logger.addHandler(ch)
 logger.addHandler(fh)
-# logging.basicConfig(filename=logpath, 
+# logging.basicConfig(filename=logpath,
 #                     level=logging.DEBUG,
 #                     format="%(asctime)s - %(levelname)s - %(message)s")
 logger.info('LOG: {0}'.format(logpath))
@@ -58,10 +58,10 @@ logger.info('LOG: {0}'.format(logpath))
 def open_json(fnm):
     """Open JSON file. If file cannot be accessed the returned value is None
     and should be checked by the code using this function
-    Parameters 
+    Parameters
     ----------
     fnm : str
-        Filename or full path 
+        Filename or full path
     Returns
     -------
     data : list of dict | None
@@ -84,11 +84,12 @@ def open_json(fnm):
     return data
 
 
-def modify_json(j_in, 
-                etime=None, 
+def modify_json(j_in,
+                etime=None,
                 ra_shift=0.02, dec_shift=0.02,
-                b_ini='g', b_end='r', b_drop=['z'], 
-                equiv={'band': 'filter', 'exposureTime': 'exptime', 
+                b_ini='g', b_end='r', b_drop=['z'],
+                propid_all=None,
+                equiv={'band': 'filter', 'exposureTime': 'exptime',
                        'RA': 'ra', 'DEC': 'dec',},):
     """
     Note all comparison are made as lowercase, to avoid errors due to a capital
@@ -96,9 +97,9 @@ def modify_json(j_in,
     Parameters
     ----------
     j_in : list of dict
-        List of dictionaries containig the entries from a JSON file 
+        List of dictionaries containig the entries from a JSON file
     etime : float
-        Exposure time to replace all the exposure times in the different 
+        Exposure time to replace all the exposure times in the different
         entries. If None, then the exposure time will not be changed
     ra_shift : float
         Shift in degress for RA, to cover the gaps in a dithering. This value
@@ -109,11 +110,13 @@ def modify_json(j_in,
         is capable to cover up to a misalignement of 48 deg between DECam and
         the RA-DEC grid
     b_ini : str
-        Initial band to be replaced by the value in b_end 
+        Initial band to be replaced by the value in b_end
     b_end : str
         Band to replace the initial band defined in b_ini
     b_drop : list
         The entries having these bands will be removed
+    propid_all: str
+        Proposal ID for all JSON files
     equiv : dict
         Dictionary to relate names we use for some keywords, against the
         values present in the JSON files. Example: we will call 'band' what
@@ -125,25 +128,35 @@ def modify_json(j_in,
         dithered obtained translating it in RA and DEC
     """
     # Making sure all values of the equiv dictionary are lowercase
-    equiv = dict((k, v.lower()) for k, v in equiv.iteritems())
+    print(equiv)
+    try:
+        equiv = dict((k, v.lower()) for k, v in equiv.iteritems())
+    except:
+        logger.warning('Seems you are using Python 3.x instead of 2.7')
+        equiv = dict((k, v.lower()) for k, v in equiv.items())
     logger.info('Dictionary of name-keyword equivalences: {0}'.format(equiv))
-    # Each element of the JSON object is a dictionary 
+    # Each element of the JSON object is a dictionary
     j_out = []
     for entry_n in j_in:
         # Create a copy of the n-th dictionary to work on it
         tmp_d = entry_n.copy()
-        # First of all is to change to lowercase the keywords of interest. 
+        # First of all is to change to lowercase the keywords of interest.
         # This will avoid us simple errors. We create a second copy to avoid
         # erros when modifyng the dictionary on the iteration
         aux_dict = entry_n.copy()
-        for k, v in tmp_d.iteritems():
-            if k.lower() in map(str.lower, equiv.values()):
-                aux_dict[k.lower()] = aux_dict.pop(k)
-                # tmp_d[k.lower()] = tmp_d.pop(k)
+        try:
+            for k, v in tmp_d.iteritems():
+                if k.lower() in map(str.lower, equiv.values()):
+                    aux_dict[k.lower()] = aux_dict.pop(k)
+                    # tmp_d[k.lower()] = tmp_d.pop(k)
+        except:
+            for k, v in tmp_d.items():
+                if k.lower() in map(str.lower, equiv.values()):
+                    aux_dict[k.lower()] = aux_dict.pop(k)
         del tmp_d
         tmp_d = aux_dict
         # 1) Change g-band to r-band
-        # If later we want to change this, something more elegant need to 
+        # If later we want to change this, something more elegant need to
         # be put in place
         band = tmp_d[equiv['band']].strip().lower()
         if (band == b_ini.lower()):
@@ -155,9 +168,11 @@ def modify_json(j_in,
         # 3) Change exptime to a new value
         if (etime is not None):
             tmp_d[equiv['exposureTime']] = etime
-        # 4) Dithering, in deg units
-        # A dithering of 0.02 deg in each direction is small enough to just 
-        # cover the CCD gaps and also to take into account the non-perfect 
+        # 4) Set Proposal ID to all JSON files
+        tmp_d['propid'] = propid_all
+        # 5) THIS NEEDS TO BE CALLED ATE THE END. Dithering, in deg units
+        # A dithering of 0.02 deg in each direction is small enough to just
+        # cover the CCD gaps and also to take into account the non-perfect
         # alignment between DECam and the RA-DEC grid
         ra0 = tmp_d[equiv['RA']]
         dec0 = tmp_d[equiv['DEC']]
@@ -172,10 +187,10 @@ def modify_json(j_in,
         j_out.append(dict_dRA)
         j_out.append(dict_dDEC)
     return j_out
-    
+
 
 def aux_main():
-    """Auxiliary main function 
+    """Auxiliary main function
     """
     # Setup argparse for user input
     h0 = "Script to modify JSON files by: (1) changing g to r-band,"
@@ -187,11 +202,23 @@ def aux_main():
     arg = argparse.ArgumentParser(description=h0, epilog=epi)
     #
     arg_file = arg.add_mutually_exclusive_group(required=True)
-    h1 = 'Filename (or full path) of the JSON file to be modified'
-    arg_file.add_argument('--file', help=h1)
-    h2 = 'Filename (or full path) of a 1-column text file containing the'
-    h2 += ' list of filenames of the JSON files to be modified'
-    arg_file.add_argument('--tab', help=h2)
+    h1a = 'Filename (or full path) of the JSON file to be modified'
+    arg_file.add_argument('--file', help=h1a)
+    h1b = 'Filename (or full path) of a 1-column text file containing the'
+    h1b += ' list of filenames of the JSON files to be modified'
+    arg_file.add_argument('--tab', help=h1b)
+    #
+    arg_propid = arg.add_mutually_exclusive_group(required=True)
+    proposal_dict = {
+        'BNS': '2019A-0205',
+        'BBH': '2019A-0235',
+    }
+    h2a = 'Proposal ID acronym ({0})'.format(proposal_dict)
+    h2a += ' Case-sensitive options: {0}'.format(proposal_dict.keys())
+    arg_propid.add_argument('--pname', choices=proposal_dict.keys())
+    h2b = 'If no proposal ID acronym is given, then a proposal ID must'
+    h2b += ' be providen. Example: 2017A-0069'
+    arg_propid.add_argument('--pid', type=str)
     #
     band_change = ['g', 'r']
     h3 = 'Pair of bands from which change the entries. Input the 2 separated'
@@ -234,6 +261,11 @@ def aux_main():
         # Read list
         arr = np.loadtxt(arg.tab, dtype=str)
         path_list = list(arr)
+    # Proposal ID
+    if (arg.pname is not None):
+        aux_propid = proposal_dict[arg.pname]
+    elif (arg.pid is not None):
+        aux_propid = arg.pid
     # If exptime is None then it will not be changed
     if (arg.exp is None):
         logger.warning('EXPTIME will not be changed as no value was input')
@@ -247,13 +279,14 @@ def aux_main():
         logger.info('Working on {0}'.format(p))
         # Modify the JSON
         tmp_out = modify_json(
-            tmp_in, 
-            etime=arg.exp, 
-            ra_shift=arg.shift[0], 
-            dec_shift=arg.shift[1], 
-            b_ini=arg.change[0], 
-            b_end=arg.change[1], 
-            b_drop=arg.drop, 
+            tmp_in,
+            etime=arg.exp,
+            ra_shift=arg.shift[0],
+            dec_shift=arg.shift[1],
+            b_ini=arg.change[0],
+            b_end=arg.change[1],
+            b_drop=arg.drop,
+            propid_all=aux_propid,
         )
         if (len(tmp_out) == 0):
             # Continue statement will assure no write-out is tried
@@ -261,7 +294,7 @@ def aux_main():
             continue
         # Writting out the modified JSON
         head, tail = os.path.split(p)
-        tail = '{0}_{1}'.format(arg.pre, tail) 
+        tail = '{0}_{1}'.format(arg.pre, tail)
         fname = os.path.join(head, tail)
         json.dump(tmp_out, open(fname, 'w+'), indent=4)
         #
