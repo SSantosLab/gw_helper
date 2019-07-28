@@ -50,3 +50,11 @@ Example:
 * “RA”: 32.    Will make Python-json fail
 * “RA”: 32.0    Will work perfect!
 ------------------------------------------------
+
+
+#### Alex D-W wget command to get images
+```bash
+STARTDATE=`date --date="12 hours ago"  +%Y%m%d`
+URL=http://decade.ncsa.illinois.edu/deca_archive/RAW
+wget -X . -r -A DECam_\*fits.fz  -np --level=2 --no-check-certificate -N -nH --cut-dirs=2 --progress=dot -e dotbytes=4M $URL/${STARTDATE}/
+```
