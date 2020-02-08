@@ -1,0 +1,36 @@
+[
+    {
+        "RA": 10.22505, 
+        "comment": "NS event s190814lal: 7 of 60, hex 10-24 tiling 1", 
+        "count": 1, 
+        "dec": -23.68476, 
+        "expType": "object", 
+        "exptime": 100, 
+        "filter": "i", 
+        "note": "Added to queue from desgw json file, not obstac", 
+        "object": "NS event s190814lal: 7 of 60, hex 10-24 tiling 1", 
+        "program": "des gw", 
+        "propid": "2020A-0402", 
+        "seqid": "s190814lal", 
+        "seqnum": 7, 
+        "seqtot": 60, 
+        "wait": "False"
+    }, 
+    {
+        "RA": 10.294664, 
+        "comment": "NS event s190814lal: 8 of 60, hex 10-24 tiling 5", 
+        "count": 1, 
+        "dec": -23.39732, 
+        "expType": "object", 
+        "exptime": 100, 
+        "filter": "i", 
+        "note": "Added to queue from desgw json file, not obstac", 
+        "object": "NS event s190814lal: 8 of 60, hex 10-24 tiling 5", 
+        "program": "des gw", 
+        "propid": "2020A-0402", 
+        "seqid": "s190814lal", 
+        "seqnum": 8, 
+        "seqtot": 60, 
+        "wait": "False"
+    }
+]

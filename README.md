@@ -58,3 +58,27 @@ STARTDATE=`date --date="12 hours ago"  +%Y%m%d`
 URL=http://decade.ncsa.illinois.edu/deca_archive/RAW
 wget -X . -r -A DECam_\*fits.fz  -np --level=2 --no-check-certificate -N -nH --cut-dirs=2 --progress=dot -e dotbytes=4M $URL/${STARTDATE}/
 ```
+
+### 2) `setup_tilings()`: a useful helper function 
+
+Use setup_tilings() to modify a json file for observing with DECam. The entire list of exposures is considered as one "tiling". Multiple tilings (copies of the entire list) can be created by setting the number of tilings to > 1. Exposure details (band, exposure time, and ra/dec offsets) must be specified for each tiling via parameter lists. If a parameter is set to None for a given tiling, the original tiling value will be copied over. The propid can also be specified; it will be applied to all tilings.
+
+
+Example usage:
+```
+import gw_helper
+
+gw_helper.setup_tilings(
+    json_files=['json/sample.json'],
+    tilings=2,
+    ra_shift=[0.0,0.5],
+    dec_shift=[0.0,0.0],
+    etime=[None,200],
+    band=[None,'z'],
+    propid='2020A-0402',
+    dir_out=None,
+    dir_log=None, 
+    prefix='out2',
+    overwrite=True,
+    debug=True)
+```
