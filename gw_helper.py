@@ -146,8 +146,10 @@ def setup_tilings(json_files,
         data_out=[]
         for t in range(tilings):
             data_t=list(data_in)
-            data_t=modify_exp(data_t,key='RA',shift=ra_shift[t])
-            data_t=modify_exp(data_t,key='dec',shift=dec_shift[t])
+            if ra_shift is not None:
+                data_t=modify_exp(data_t,key='RA',shift=ra_shift[t])
+            if dec_shift is not None:
+                data_t=modify_exp(data_t,key='dec',shift=dec_shift[t])
             if etime[t] is not None:
                 data_t=modify_exp(data_t,key='exptime',value=etime[t])
             if band[t] is not None:

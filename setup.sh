@@ -5,5 +5,8 @@ source $CONDA_DIR/etc/profile.d/conda.sh
 
 conda activate des18a
 
-jupyter notebook --no-browser --port=8889
+echo "Environment is ready. To start jupyter notebook server, run"
+
+echo "jupyter notebook --no-browser --port=8889"
+
 
